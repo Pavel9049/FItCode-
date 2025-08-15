@@ -28,6 +28,21 @@ async def run_polling():
 	dp.include_router(check_payment_router.router)
 	dp.include_router(cabinet_router.router)
 	dp.include_router(admin_router.router)
+	# Новые разделы
+	from app.routers import workouts as workouts_router
+	from app.routers import menu as menu_router
+	from app.routers import ai_kbju as ai_kbju_router
+	from app.routers import rewards as rewards_router
+	from app.routers import settings as settings_router
+	from app.routers import support as support_router
+	from app.routers import instagram as instagram_router
+	dp.include_router(workouts_router.router)
+	dp.include_router(menu_router.router)
+	dp.include_router(ai_kbju_router.router)
+	dp.include_router(rewards_router.router)
+	dp.include_router(settings_router.router)
+	dp.include_router(support_router.router)
+	dp.include_router(instagram_router.router)
 	# Рефералы
 	from app.routers import referral as referral_router
 	dp.include_router(referral_router.router)
