@@ -35,6 +35,10 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db():
     from app.db import models  # noqa: F401
+    from app.services.bootstrap import ensure_default_programs
     engine = get_engine()
     async with engine.begin() as conn:
         await conn.run_sync(models.Base.metadata.create_all)
+    async_session = get_session_maker()
+    async with async_session() as session:
+        await ensure_default_programs(session)
