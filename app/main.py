@@ -22,6 +22,7 @@ from app.routers import instagram as instagram_router
 from app.routers import health as health_router
 from app.routers import referral as referral_router
 from app.routers import fallback as fallback_router
+from app.routers import test as test_router
 from app.background.scheduler import setup_scheduler
 
 logging.basicConfig(level=logging.INFO)
@@ -31,6 +32,9 @@ logger = logging.getLogger(__name__)
 async def run_polling():
     bot = Bot(token=settings.telegram_bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
+    
+    # Тестовый роутер (должен быть первым для отладки)
+    dp.include_router(test_router.router)
     
     # Основные роутеры
     dp.include_router(start_router.router)
@@ -50,6 +54,8 @@ async def run_polling():
     dp.include_router(instagram_router.router)
     dp.include_router(health_router.router)
     dp.include_router(referral_router.router)
+    
+    # Fallback роутер (должен быть последним)
     dp.include_router(fallback_router.router)
 
     await init_db()

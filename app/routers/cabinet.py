@@ -56,6 +56,7 @@ async def show_cabinet(message: types.Message):
 @router.callback_query(lambda c: c.data == "cabinet")
 async def cabinet_callback(callback: types.CallbackQuery):
 	"""Обработка кнопки личного кабинета"""
+	print(f"🏠 Получен callback cabinet от пользователя {callback.from_user.id}")
 	await cleanup_cabinet_messages(callback.message)
 	await show_cabinet(callback.message)
 	await callback.answer()

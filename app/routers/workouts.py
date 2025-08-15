@@ -58,6 +58,7 @@ async def show_workouts_menu(message: types.Message):
 @router.callback_query(lambda c: c.data == "workouts")
 async def workouts_callback(callback: types.CallbackQuery):
     """Обработка кнопки тренировок из личного кабинета"""
+    print(f"🏋️‍♂️ Получен callback workouts от пользователя {callback.from_user.id}")
     await cleanup_workout_messages(callback.message)
     await show_workouts_menu(callback.message)
     await callback.answer()

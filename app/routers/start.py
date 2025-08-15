@@ -97,65 +97,73 @@ async def on_start(message: types.Message):
 
 @router.callback_query(lambda c: c.data == "choose_program")
 async def choose_program(callback: types.CallbackQuery):
-	programs = get_paid_programs()
-	
-	# Проверяем, есть ли у пользователя реферальная скидка
-	async_session = get_session_maker()
-	async with async_session() as s:
-		user = (await s.execute(
-			select(User).where(User.tg_user_id == callback.from_user.id)
-		)).scalar_one_or_none()
-		
-		discount = 0
-		if user:
-			referral = (await s.execute(
-				select(Referral).where(Referral.referred_user_id == user.id)
-			)).scalar_one_or_none()
-			if referral:
-				discount = referral.discount_percent
-	
-	lines = []
-	for p in programs:
-		original_price = p["price_rub"]
-		discounted_price = int(original_price * (1 - discount / 100))
-		
-		features = "\n".join([f"• {f}" for f in p["features"]])
-		
-		if discount > 0:
-			lines.append(f"{p['title']} — <s>{original_price}</s> <b>{discounted_price} ₽</b> (-{discount}%)\n{features}\n")
-		else:
-			lines.append(f"{p['title']} — {p['price_rub']} ₽\n{features}\n")
-	
-	text = "\n".join(lines)
-	
-	if discount > 0:
-		text += f"\n🎉 <b>У вас скидка {discount}% по реферальной ссылке!</b>"
+    """Обработка выбора программы"""
+    print(f"🎯 Получен callback choose_program от пользователя {callback.from_user.id}")
+    try:
+        programs = get_paid_programs()
+        
+        # Проверяем, есть ли у пользователя реферальная скидка
+        async_session = get_session_maker()
+        async with async_session() as s:
+            user = (await s.execute(
+                select(User).where(User.tg_user_id == callback.from_user.id)
+            )).scalar_one_or_none()
+            
+            discount = 0
+            if user:
+                referral = (await s.execute(
+                    select(Referral).where(Referral.referred_user_id == user.id)
+                )).scalar_one_or_none()
+                if referral:
+                    discount = referral.discount_percent
+        
+        lines = []
+        for p in programs:
+            original_price = p["price_rub"]
+            discounted_price = int(original_price * (1 - discount / 100))
+            
+            features = "\n".join([f"• {f}" for f in p["features"]])
+            
+            if discount > 0:
+                lines.append(f"{p['title']} — <s>{original_price}</s> <b>{discounted_price} ₽</b> (-{discount}%)\n{features}\n")
+            else:
+                lines.append(f"{p['title']} — {p['price_rub']} ₽\n{features}\n")
+        
+        text = "\n".join(lines)
+        
+        if discount > 0:
+            text += f"\n🎉 <b>У вас скидка {discount}% по реферальной ссылке!</b>"
 
-	# Кнопки покупки
-	buttons = []
-	for p in programs:
-		original_price = p["price_rub"]
-		discounted_price = int(original_price * (1 - discount / 100))
-		
-		if discount > 0:
-			buttons.append([InlineKeyboardButton(
-				text=f"Купить: {p['title']} ({discounted_price}₽)", 
-				callback_data=f"buy:{p['code']}"
-			)])
-		else:
-			buttons.append([InlineKeyboardButton(
-				text=f"Купить: {p['title']} ({p['price_rub']}₽)", 
-				callback_data=f"buy:{p['code']}"
-			)])
-	
-	kb = InlineKeyboardMarkup(inline_keyboard=buttons)
-	await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
-	await callback.answer()
+        # Кнопки покупки
+        buttons = []
+        for p in programs:
+            original_price = p["price_rub"]
+            discounted_price = int(original_price * (1 - discount / 100))
+            
+            if discount > 0:
+                buttons.append([InlineKeyboardButton(
+                    text=f"Купить: {p['title']} ({discounted_price}₽)", 
+                    callback_data=f"buy:{p['code']}"
+                )])
+            else:
+                buttons.append([InlineKeyboardButton(
+                    text=f"Купить: {p['title']} ({p['price_rub']}₽)", 
+                    callback_data=f"buy:{p['code']}"
+                )])
+        
+        kb = InlineKeyboardMarkup(inline_keyboard=buttons)
+        await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
+        await callback.answer()
+    except Exception as e:
+        await callback.answer(f"Ошибка: {str(e)}")
+        print(f"Error in choose_program: {e}")
+	# Код уже обработан выше в try-except блоке
 
 
 @router.callback_query(lambda c: c.data.startswith("buy:"))
 async def buy_program(callback: types.CallbackQuery):
 	"""Обработка покупки программы"""
+	print(f"💳 Получен callback buy от пользователя {callback.from_user.id}: {callback.data}")
 	program_code = callback.data.split(":")[1]
 	programs = get_paid_programs()
 	selected_program = next((p for p in programs if p["code"] == program_code), None)
