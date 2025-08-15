@@ -1,8 +1,25 @@
+nohup: ignoring input
 INFO:__main__:DB initialized. Starting polling...
 INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
-INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.job" to job store "default"
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.motivation_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.nutrition_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.workout_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.star_reminder_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.progress_check_job" to job store "default"
 INFO:apscheduler.scheduler:Scheduler started
 INFO:aiogram.dispatcher:Start polling
 INFO:aiogram.dispatcher:Run polling for bot @FitCoode_bot id=8269244638 - 'FItCode'
-INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.job (trigger: interval[4:00:00], next run at: 2025-08-15 14:13:50 UTC)" (scheduled at 2025-08-15 10:13:50.154422+00:00)
-INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.job (trigger: interval[4:00:00], next run at: 2025-08-15 14:13:50 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.motivation_job (trigger: interval[4:00:00], next run at: 2025-08-15 18:48:50 UTC)" (scheduled at 2025-08-15 14:48:50.934457+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.motivation_job (trigger: interval[4:00:00], next run at: 2025-08-15 18:48:50 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.nutrition_job (trigger: interval[6:00:00], next run at: 2025-08-15 20:48:55 UTC)" (scheduled at 2025-08-15 14:48:55.934825+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.nutrition_job (trigger: interval[6:00:00], next run at: 2025-08-15 20:48:55 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.workout_job (trigger: interval[8:00:00], next run at: 2025-08-15 22:49:00 UTC)" (scheduled at 2025-08-15 14:49:00.934903+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.workout_job (trigger: interval[8:00:00], next run at: 2025-08-15 22:49:00 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.star_reminder_job (trigger: cron[hour='18', minute='0'], next run at: 2025-08-15 18:00:00 UTC)" (scheduled at 2025-08-15 14:49:05.934963+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.star_reminder_job (trigger: cron[hour='18', minute='0'], next run at: 2025-08-15 18:00:00 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.progress_check_job (trigger: cron[day_of_week='sun', hour='10', minute='0'], next run at: 2025-08-17 10:00:00 UTC)" (scheduled at 2025-08-15 14:49:10.936267+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.progress_check_job (trigger: cron[day_of_week='sun', hour='10', minute='0'], next run at: 2025-08-17 10:00:00 UTC)" executed successfully
