@@ -42,11 +42,7 @@ async def add_meals_to_db():
                         fats=meal.fat,
                         carbs=meal.carbs,
                         recipe=meal.recipe,
-                        ingredients=", ".join(meal.ingredients),
-                        cooking_time=meal.cooking_time,
-                        difficulty=meal.difficulty,
-                        tags=", ".join(meal.tags),
-                        nutrition_notes=meal.nutrition_notes
+                        tags=", ".join(meal.tags)
                     )
                     session.add(db_meal)
                     added_count += 1
