@@ -23,3 +23,6 @@ INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.star_re
 INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.star_reminder_job (trigger: cron[hour='18', minute='0'], next run at: 2025-08-15 18:00:00 UTC)" executed successfully
 INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.progress_check_job (trigger: cron[day_of_week='sun', hour='10', minute='0'], next run at: 2025-08-17 10:00:00 UTC)" (scheduled at 2025-08-15 14:49:10.936267+00:00)
 INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.progress_check_job (trigger: cron[day_of_week='sun', hour='10', minute='0'], next run at: 2025-08-17 10:00:00 UTC)" executed successfully
+ERROR:aiogram.dispatcher:Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+WARNING:aiogram.dispatcher:Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8269244638)
+INFO:aiogram.dispatcher:Connection established (tryings = 1, bot id = 8269244638)
