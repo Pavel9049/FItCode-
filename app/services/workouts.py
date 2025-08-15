@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple
+import random
+from enum import Enum
 from app.db.models import ProgramLevel
 import json
 
@@ -609,3 +611,651 @@ def get_muscle_groups() -> List[str]:
 def get_split_info() -> List[Dict]:
 	"""Получить информацию о сплитах"""
 	return SPLITS
+
+
+class WorkoutGoal(Enum):
+    LOSE_WEIGHT = "lose_weight"
+    GAIN_MASS = "gain_mass"
+    CUT = "cut"
+    TONE = "tone"
+
+class WorkoutLevel(Enum):
+    BEGINNER = "beginner"
+    NOVICE = "novice"
+    ADVANCED = "advanced"
+    PRO = "pro"
+
+class EquipmentType(Enum):
+    BODYWEIGHT = "bodyweight"
+    DUMBBELLS = "dumbbells"
+    BARBELL = "barbell"
+    MACHINES = "machines"
+    RESISTANCE_BANDS = "resistance_bands"
+
+class Exercise:
+    def __init__(
+        self,
+        name: str,
+        muscle_group: str,
+        level: WorkoutLevel,
+        equipment: EquipmentType,
+        video_url: str,
+        image_url: str,
+        description: str,
+        target_muscles: List[str],
+        instructions: List[str],
+        sets_range: Tuple[int, int],
+        reps_range: Tuple[int, int],
+        rest_time: int,  # в секундах
+        difficulty: int  # 1-10
+    ):
+        self.name = name
+        self.muscle_group = muscle_group
+        self.level = level
+        self.equipment = equipment
+        self.video_url = video_url
+        self.image_url = image_url
+        self.description = description
+        self.target_muscles = target_muscles
+        self.instructions = instructions
+        self.sets_range = sets_range
+        self.reps_range = reps_range
+        self.rest_time = rest_time
+        self.difficulty = difficulty
+
+class WorkoutCalculator:
+    """Калькулятор для подбора весов и планов тренировок"""
+    
+    @staticmethod
+    def calculate_one_rep_max(weight: float, reps: int) -> float:
+        """Рассчитать 1RM по формуле Эпли"""
+        if reps == 1:
+            return weight
+        return weight * (1 + reps / 30)
+    
+    @staticmethod
+    def calculate_working_weight(one_rm: float, percentage: float) -> float:
+        """Рассчитать рабочий вес от 1RM"""
+        return round(one_rm * percentage / 2.5) * 2.5  # Округляем до ближайших 2.5 кг
+    
+    @staticmethod
+    def estimate_one_rm_by_bodyweight(weight_kg: float, height_cm: int, gender: str, age: int) -> Dict[str, float]:
+        """Оценка 1RM по весу тела и параметрам"""
+        # Базовые коэффициенты для разных групп мышц
+        base_coefficients = {
+            "chest": {"male": 0.8, "female": 0.5},
+            "back": {"male": 0.9, "female": 0.6},
+            "legs": {"male": 1.2, "female": 0.8},
+            "shoulders": {"male": 0.4, "female": 0.25},
+            "biceps": {"male": 0.3, "female": 0.2},
+            "triceps": {"male": 0.35, "female": 0.25},
+            "abs": {"male": 0.2, "female": 0.15}
+        }
+        
+        # Корректировка по возрасту
+        age_factor = 1.0
+        if age < 25:
+            age_factor = 1.1
+        elif age > 40:
+            age_factor = 0.9
+        
+        # Корректировка по росту (высокие люди обычно сильнее)
+        height_factor = 1.0 + (height_cm - 170) * 0.002
+        
+        one_rms = {}
+        for muscle, coeffs in base_coefficients.items():
+            base_weight = weight_kg * coeffs[gender.lower()] * age_factor * height_factor
+            one_rms[muscle] = round(base_weight, 1)
+        
+        return one_rms
+    
+    @staticmethod
+    def get_goal_parameters(goal: WorkoutGoal) -> Dict[str, float]:
+        """Параметры тренировки для разных целей"""
+        goal_params = {
+            WorkoutGoal.LOSE_WEIGHT: {
+                "intensity": 0.7,  # 70% от 1RM
+                "volume": "high",
+                "rest_time": 60,  # секунды
+                "supersets": True,
+                "cardio": True
+            },
+            WorkoutGoal.GAIN_MASS: {
+                "intensity": 0.8,  # 80% от 1RM
+                "volume": "medium",
+                "rest_time": 120,
+                "supersets": False,
+                "cardio": False
+            },
+            WorkoutGoal.CUT: {
+                "intensity": 0.75,
+                "volume": "high",
+                "rest_time": 90,
+                "supersets": True,
+                "cardio": True
+            },
+            WorkoutGoal.TONE: {
+                "intensity": 0.65,
+                "volume": "medium",
+                "rest_time": 75,
+                "supersets": False,
+                "cardio": True
+            }
+        }
+        return goal_params[goal]
+    
+    @staticmethod
+    def get_level_parameters(level: WorkoutLevel) -> Dict[str, any]:
+        """Параметры тренировки для разных уровней"""
+        level_params = {
+            WorkoutLevel.BEGINNER: {
+                "exercises_per_muscle": 2,
+                "sets_per_exercise": (2, 3),
+                "reps_per_set": (10, 15),
+                "workout_frequency": 3,
+                "progression_rate": "slow"
+            },
+            WorkoutLevel.NOVICE: {
+                "exercises_per_muscle": 3,
+                "sets_per_exercise": (3, 4),
+                "reps_per_set": (8, 12),
+                "workout_frequency": 4,
+                "progression_rate": "medium"
+            },
+            WorkoutLevel.ADVANCED: {
+                "exercises_per_muscle": 4,
+                "sets_per_exercise": (4, 5),
+                "reps_per_set": (6, 10),
+                "workout_frequency": 5,
+                "progression_rate": "fast"
+            },
+            WorkoutLevel.PRO: {
+                "exercises_per_muscle": 5,
+                "sets_per_exercise": (5, 6),
+                "reps_per_set": (4, 8),
+                "workout_frequency": 6,
+                "progression_rate": "very_fast"
+            }
+        }
+        return level_params[level]
+
+# База упражнений с видео и изображениями
+EXERCISES_DATABASE = {
+    "chest": {
+        WorkoutLevel.BEGINNER: [
+            Exercise(
+                name="Отжимания от пола",
+                muscle_group="chest",
+                level=WorkoutLevel.BEGINNER,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/chest_beginner_pushups",
+                image_url="assets/images/exercises/chest/pushups.jpg",
+                description="Базовое упражнение для грудных мышц",
+                target_muscles=["грудные мышцы", "трицепс", "передние дельты"],
+                instructions=[
+                    "Примите упор лежа",
+                    "Руки на ширине плеч",
+                    "Опуститесь до касания грудью пола",
+                    "Поднимитесь в исходное положение"
+                ],
+                sets_range=(2, 3),
+                reps_range=(10, 15),
+                rest_time=60,
+                difficulty=3
+            ),
+            Exercise(
+                name="Жим гантелей лежа",
+                muscle_group="chest",
+                level=WorkoutLevel.BEGINNER,
+                equipment=EquipmentType.DUMBBELLS,
+                video_url="https://youtu.be/chest_beginner_dumbbell_press",
+                image_url="assets/images/exercises/chest/dumbbell_press.jpg",
+                description="Жим гантелей для развития грудных мышц",
+                target_muscles=["грудные мышцы", "трицепс", "передние дельты"],
+                instructions=[
+                    "Лягте на скамью",
+                    "Держите гантели на уровне груди",
+                    "Выжмите гантели вверх",
+                    "Опустите под контролем"
+                ],
+                sets_range=(3, 4),
+                reps_range=(8, 12),
+                rest_time=90,
+                difficulty=4
+            )
+        ],
+        WorkoutLevel.NOVICE: [
+            Exercise(
+                name="Жим штанги лежа",
+                muscle_group="chest",
+                level=WorkoutLevel.NOVICE,
+                equipment=EquipmentType.BARBELL,
+                video_url="https://youtu.be/chest_novice_barbell_press",
+                image_url="assets/images/exercises/chest/barbell_press.jpg",
+                description="Классический жим штанги лежа",
+                target_muscles=["грудные мышцы", "трицепс", "передние дельты"],
+                instructions=[
+                    "Лягте на скамью",
+                    "Возьмите штангу хватом сверху",
+                    "Опустите штангу к груди",
+                    "Выжмите вверх"
+                ],
+                sets_range=(3, 4),
+                reps_range=(6, 10),
+                rest_time=120,
+                difficulty=6
+            ),
+            Exercise(
+                name="Разведение гантелей лежа",
+                muscle_group="chest",
+                level=WorkoutLevel.NOVICE,
+                equipment=EquipmentType.DUMBBELLS,
+                video_url="https://youtu.be/chest_novice_dumbbell_flyes",
+                image_url="assets/images/exercises/chest/dumbbell_flyes.jpg",
+                description="Изолирующее упражнение для грудных мышц",
+                target_muscles=["грудные мышцы"],
+                instructions=[
+                    "Лягте на скамью",
+                    "Держите гантели над грудью",
+                    "Разведите руки в стороны",
+                    "Сведите гантели обратно"
+                ],
+                sets_range=(3, 4),
+                reps_range=(10, 15),
+                rest_time=90,
+                difficulty=5
+            )
+        ],
+        WorkoutLevel.ADVANCED: [
+            Exercise(
+                name="Жим штанги на наклонной скамье",
+                muscle_group="chest",
+                level=WorkoutLevel.ADVANCED,
+                equipment=EquipmentType.BARBELL,
+                video_url="https://youtu.be/chest_advanced_incline_press",
+                image_url="assets/images/exercises/chest/incline_press.jpg",
+                description="Жим на наклонной скамье для верхней части груди",
+                target_muscles=["верхняя часть грудных мышц", "трицепс", "передние дельты"],
+                instructions=[
+                    "Установите скамью под углом 30-45 градусов",
+                    "Выполните жим штанги",
+                    "Фокусируйтесь на верхней части груди"
+                ],
+                sets_range=(4, 5),
+                reps_range=(6, 10),
+                rest_time=120,
+                difficulty=7
+            ),
+            Exercise(
+                name="Отжимания на брусьях",
+                muscle_group="chest",
+                level=WorkoutLevel.ADVANCED,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/chest_advanced_dips",
+                image_url="assets/images/exercises/chest/dips.jpg",
+                description="Отжимания на брусьях для развития груди и трицепса",
+                target_muscles=["грудные мышцы", "трицепс", "передние дельты"],
+                instructions=[
+                    "Поднимитесь на брусья",
+                    "Опуститесь до параллели плеч",
+                    "Поднимитесь в исходное положение"
+                ],
+                sets_range=(3, 4),
+                reps_range=(8, 12),
+                rest_time=90,
+                difficulty=7
+            )
+        ],
+        WorkoutLevel.PRO: [
+            Exercise(
+                name="Жим штанги с паузами",
+                muscle_group="chest",
+                level=WorkoutLevel.PRO,
+                equipment=EquipmentType.BARBELL,
+                video_url="https://youtu.be/chest_pro_pause_press",
+                image_url="assets/images/exercises/chest/pause_press.jpg",
+                description="Жим с паузами для развития силы",
+                target_muscles=["грудные мышцы", "трицепс", "передние дельты"],
+                instructions=[
+                    "Выполните жим штанги",
+                    "Сделайте паузу 2-3 секунды на груди",
+                    "Выжмите вверх"
+                ],
+                sets_range=(4, 5),
+                reps_range=(4, 6),
+                rest_time=180,
+                difficulty=9
+            ),
+            Exercise(
+                name="Жим гантелей на наклонной скамье с дроп-сетами",
+                muscle_group="chest",
+                level=WorkoutLevel.PRO,
+                equipment=EquipmentType.DUMBBELLS,
+                video_url="https://youtu.be/chest_pro_incline_dropset",
+                image_url="assets/images/exercises/chest/incline_dropset.jpg",
+                description="Жим с дроп-сетами для максимального роста мышц",
+                target_muscles=["верхняя часть грудных мышц", "трицепс"],
+                instructions=[
+                    "Выполните жим гантелей на наклонной скамье",
+                    "Сразу уменьшите вес на 20-30%",
+                    "Продолжайте до отказа"
+                ],
+                sets_range=(3, 4),
+                reps_range=(8, 12),
+                rest_time=150,
+                difficulty=9
+            )
+        ]
+    },
+    "back": {
+        WorkoutLevel.BEGINNER: [
+            Exercise(
+                name="Подтягивания с резинкой",
+                muscle_group="back",
+                level=WorkoutLevel.BEGINNER,
+                equipment=EquipmentType.RESISTANCE_BANDS,
+                video_url="https://youtu.be/back_beginner_band_pullups",
+                image_url="assets/images/exercises/back/band_pullups.jpg",
+                description="Подтягивания с поддержкой резинки",
+                target_muscles=["широчайшие мышцы спины", "бицепс", "трапеции"],
+                instructions=[
+                    "Закрепите резинку на турнике",
+                    "Поставьте ногу в резинку",
+                    "Выполните подтягивание"
+                ],
+                sets_range=(2, 3),
+                reps_range=(5, 10),
+                rest_time=90,
+                difficulty=4
+            ),
+            Exercise(
+                name="Тяга гантели в наклоне",
+                muscle_group="back",
+                level=WorkoutLevel.BEGINNER,
+                equipment=EquipmentType.DUMBBELLS,
+                video_url="https://youtu.be/back_beginner_dumbbell_row",
+                image_url="assets/images/exercises/back/dumbbell_row.jpg",
+                description="Тяга гантели одной рукой",
+                target_muscles=["широчайшие мышцы спины", "бицепс", "трапеции"],
+                instructions=[
+                    "Наклонитесь вперед",
+                    "Подтяните гантель к поясу",
+                    "Опустите под контролем"
+                ],
+                sets_range=(3, 4),
+                reps_range=(8, 12),
+                rest_time=90,
+                difficulty=4
+            )
+        ],
+        WorkoutLevel.NOVICE: [
+            Exercise(
+                name="Подтягивания на турнике",
+                muscle_group="back",
+                level=WorkoutLevel.NOVICE,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/back_novice_pullups",
+                image_url="assets/images/exercises/back/pullups.jpg",
+                description="Классические подтягивания",
+                target_muscles=["широчайшие мышцы спины", "бицепс", "трапеции"],
+                instructions=[
+                    "Возьмитесь за турник хватом сверху",
+                    "Подтянитесь до касания подбородком турника",
+                    "Опуститесь под контролем"
+                ],
+                sets_range=(3, 4),
+                reps_range=(6, 10),
+                rest_time=120,
+                difficulty=6
+            ),
+            Exercise(
+                name="Тяга штанги в наклоне",
+                muscle_group="back",
+                level=WorkoutLevel.NOVICE,
+                equipment=EquipmentType.BARBELL,
+                video_url="https://youtu.be/back_novice_barbell_row",
+                image_url="assets/images/exercises/back/barbell_row.jpg",
+                description="Тяга штанги в наклоне для толщины спины",
+                target_muscles=["широчайшие мышцы спины", "бицепс", "трапеции"],
+                instructions=[
+                    "Наклонитесь вперед под углом 45 градусов",
+                    "Подтяните штангу к поясу",
+                    "Опустите под контролем"
+                ],
+                sets_range=(3, 4),
+                reps_range=(8, 12),
+                rest_time=120,
+                difficulty=6
+            )
+        ],
+        WorkoutLevel.ADVANCED: [
+            Exercise(
+                name="Подтягивания широким хватом",
+                muscle_group="back",
+                level=WorkoutLevel.ADVANCED,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/back_advanced_wide_pullups",
+                image_url="assets/images/exercises/back/wide_pullups.jpg",
+                description="Подтягивания широким хватом для ширины спины",
+                target_muscles=["широчайшие мышцы спины", "бицепс"],
+                instructions=[
+                    "Возьмитесь за турник широким хватом",
+                    "Подтянитесь до касания грудью турника",
+                    "Фокусируйтесь на широчайших мышцах"
+                ],
+                sets_range=(4, 5),
+                reps_range=(8, 12),
+                rest_time=120,
+                difficulty=7
+            ),
+            Exercise(
+                name="Тяга Т-грифа",
+                muscle_group="back",
+                level=WorkoutLevel.ADVANCED,
+                equipment=EquipmentType.MACHINES,
+                video_url="https://youtu.be/back_advanced_t_bar_row",
+                image_url="assets/images/exercises/back/t_bar_row.jpg",
+                description="Тяга Т-грифа для изоляции мышц спины",
+                target_muscles=["широчайшие мышцы спины", "трапеции"],
+                instructions=[
+                    "Встаньте на платформу Т-грифа",
+                    "Подтяните рукоятку к груди",
+                    "Сожмите лопатки"
+                ],
+                sets_range=(4, 5),
+                reps_range=(8, 12),
+                rest_time=120,
+                difficulty=7
+            )
+        ],
+        WorkoutLevel.PRO: [
+            Exercise(
+                name="Подтягивания с отягощением",
+                muscle_group="back",
+                level=WorkoutLevel.PRO,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/back_pro_weighted_pullups",
+                image_url="assets/images/exercises/back/weighted_pullups.jpg",
+                description="Подтягивания с дополнительным весом",
+                target_muscles=["широчайшие мышцы спины", "бицепс", "трапеции"],
+                instructions=[
+                    "Закрепите отягощение на поясе",
+                    "Выполните подтягивания с весом",
+                    "Фокусируйтесь на технике"
+                ],
+                sets_range=(4, 5),
+                reps_range=(6, 8),
+                rest_time=150,
+                difficulty=8
+            ),
+            Exercise(
+                name="Тяга штанги в наклоне с паузами",
+                muscle_group="back",
+                level=WorkoutLevel.PRO,
+                equipment=EquipmentType.BARBELL,
+                video_url="https://youtu.be/back_pro_pause_row",
+                image_url="assets/images/exercises/back/pause_row.jpg",
+                description="Тяга с паузами для максимального напряжения",
+                target_muscles=["широчайшие мышцы спины", "бицепс", "трапеции"],
+                instructions=[
+                    "Выполните тягу штанги",
+                    "Сделайте паузу 2-3 секунды в верхней точке",
+                    "Опустите под контролем"
+                ],
+                sets_range=(4, 5),
+                reps_range=(6, 8),
+                rest_time=150,
+                difficulty=8
+            )
+        ]
+    }
+}
+
+# Добавлю остальные группы мышц аналогично
+def get_exercises_for_muscle_group(muscle_group: str, level: WorkoutLevel) -> List[Exercise]:
+    """Получить упражнения для группы мышц и уровня"""
+    if muscle_group in EXERCISES_DATABASE and level in EXERCISES_DATABASE[muscle_group]:
+        return EXERCISES_DATABASE[muscle_group][level]
+    return []
+
+def generate_workout_plan(
+    user_weight: float,
+    user_height: int,
+    user_gender: str,
+    user_age: int,
+    goal: WorkoutGoal,
+    level: WorkoutLevel,
+    available_equipment: List[EquipmentType]
+) -> Dict[str, any]:
+    """Генерировать персональный план тренировок"""
+    
+    calculator = WorkoutCalculator()
+    
+    # Рассчитываем 1RM для всех групп мышц
+    one_rms = calculator.estimate_one_rm_by_bodyweight(user_weight, user_height, user_gender, user_age)
+    
+    # Получаем параметры для цели и уровня
+    goal_params = calculator.get_goal_parameters(goal)
+    level_params = calculator.get_level_parameters(level)
+    
+    # Создаем план на неделю
+    workout_plan = {
+        "monday": {"muscle_groups": ["chest", "triceps"], "exercises": []},
+        "tuesday": {"muscle_groups": ["back", "biceps"], "exercises": []},
+        "wednesday": {"muscle_groups": ["legs"], "exercises": []},
+        "thursday": {"muscle_groups": ["shoulders", "abs"], "exercises": []},
+        "friday": {"muscle_groups": ["chest", "back"], "exercises": []},
+        "saturday": {"muscle_groups": ["legs", "abs"], "exercises": []},
+        "sunday": {"muscle_groups": ["rest"], "exercises": []}
+    }
+    
+    # Генерируем упражнения для каждого дня
+    for day, day_plan in workout_plan.items():
+        if day_plan["muscle_groups"] == ["rest"]:
+            continue
+            
+        for muscle_group in day_plan["muscle_groups"]:
+            exercises = get_exercises_for_muscle_group(muscle_group, level)
+            
+            # Фильтруем по доступному оборудованию
+            available_exercises = [ex for ex in exercises if ex.equipment in available_equipment]
+            
+            if not available_exercises:
+                continue
+                
+            # Выбираем упражнения для этого дня
+            num_exercises = min(level_params["exercises_per_muscle"], len(available_exercises))
+            selected_exercises = random.sample(available_exercises, num_exercises)
+            
+            for exercise in selected_exercises:
+                # Рассчитываем рабочий вес
+                one_rm = one_rms.get(muscle_group, 50)  # дефолтное значение
+                working_weight = calculator.calculate_working_weight(one_rm, goal_params["intensity"])
+                
+                # Определяем количество подходов и повторений
+                sets = random.randint(*level_params["sets_per_exercise"])
+                reps = random.randint(*level_params["reps_per_set"])
+                
+                exercise_plan = {
+                    "name": exercise.name,
+                    "muscle_group": exercise.muscle_group,
+                    "equipment": exercise.equipment.value,
+                    "video_url": exercise.video_url,
+                    "image_url": exercise.image_url,
+                    "description": exercise.description,
+                    "target_muscles": exercise.target_muscles,
+                    "instructions": exercise.instructions,
+                    "sets": sets,
+                    "reps": reps,
+                    "weight": working_weight,
+                    "rest_time": exercise.rest_time,
+                    "difficulty": exercise.difficulty
+                }
+                
+                day_plan["exercises"].append(exercise_plan)
+    
+    return workout_plan
+
+def get_muscle_groups() -> List[str]:
+    """Получить список групп мышц"""
+    return list(EXERCISES_DATABASE.keys())
+
+def get_split_info() -> Dict[str, Dict]:
+    """Получить информацию о сплитах"""
+    return {
+        "push_pull_legs": {
+            "title": "Push/Pull/Legs",
+            "description": "Классический трехдневный сплит",
+            "days": {
+                "monday": ["chest", "shoulders", "triceps"],
+                "tuesday": ["back", "biceps"],
+                "wednesday": ["legs"],
+                "thursday": ["chest", "shoulders", "triceps"],
+                "friday": ["back", "biceps"],
+                "saturday": ["legs"],
+                "sunday": ["rest"]
+            }
+        },
+        "upper_lower": {
+            "title": "Upper/Lower",
+            "description": "Четырехдневный сплит верх/низ",
+            "days": {
+                "monday": ["chest", "back", "shoulders", "arms"],
+                "tuesday": ["legs"],
+                "wednesday": ["rest"],
+                "thursday": ["chest", "back", "shoulders", "arms"],
+                "friday": ["legs"],
+                "saturday": ["rest"],
+                "sunday": ["rest"]
+            }
+        },
+        "bro_split": {
+            "title": "Bro Split",
+            "description": "Пятидневный сплит по группам мышц",
+            "days": {
+                "monday": ["chest"],
+                "tuesday": ["back"],
+                "wednesday": ["legs"],
+                "thursday": ["shoulders"],
+                "friday": ["arms"],
+                "saturday": ["rest"],
+                "sunday": ["rest"]
+            }
+        }
+    }
+
+def estimate_working_weight(
+    exercise_name: str,
+    muscle_group: str,
+    user_weight: float,
+    user_height: int,
+    user_gender: str,
+    user_age: int,
+    goal: WorkoutGoal
+) -> float:
+    """Оценить рабочий вес для упражнения"""
+    calculator = WorkoutCalculator()
+    one_rms = calculator.estimate_one_rm_by_bodyweight(user_weight, user_height, user_gender, user_age)
+    one_rm = one_rms.get(muscle_group, 50)
+    goal_params = calculator.get_goal_parameters(goal)
+    return calculator.calculate_working_weight(one_rm, goal_params["intensity"])
