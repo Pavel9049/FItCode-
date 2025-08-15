@@ -58,6 +58,24 @@ async def run_polling():
 	except Exception:
 		pass
 
+	# Команды бота
+	from aiogram.types import BotCommand
+	try:
+		await bot.set_my_commands([
+			BotCommand(command="start", description="Начать"),
+			BotCommand(command="cabinet", description="Личный кабинет"),
+			BotCommand(command="workouts", description="Тренировки"),
+			BotCommand(command="menu", description="Меню на неделю (PDF)"),
+			BotCommand(command="kbju", description="AI КБЖУ по фото"),
+			BotCommand(command="rewards", description="Звезды и призы"),
+			BotCommand(command="settings", description="Настройки уведомлений"),
+			BotCommand(command="instagram", description="Instagram"),
+			BotCommand(command="ref", description="Реферальная ссылка"),
+			BotCommand(command="support", description="Поддержка 24/7 (PRO)"),
+		])
+	except Exception:
+		pass
+
 	# Планировщик рассылок
 	if settings.scheduler_enabled:
 		async def all_chat_ids():

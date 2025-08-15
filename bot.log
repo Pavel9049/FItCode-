@@ -4,5 +4,5 @@ INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.job" to job store
 INFO:apscheduler.scheduler:Scheduler started
 INFO:aiogram.dispatcher:Start polling
 INFO:aiogram.dispatcher:Run polling for bot @FitCoode_bot id=8269244638 - 'FItCode'
-INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.job (trigger: interval[4:00:00], next run at: 2025-08-15 13:28:09 UTC)" (scheduled at 2025-08-15 09:28:09.637734+00:00)
-INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.job (trigger: interval[4:00:00], next run at: 2025-08-15 13:28:09 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.job (trigger: interval[4:00:00], next run at: 2025-08-15 13:41:24 UTC)" (scheduled at 2025-08-15 09:41:24.214557+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.job (trigger: interval[4:00:00], next run at: 2025-08-15 13:41:24 UTC)" executed successfully
