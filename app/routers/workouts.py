@@ -12,6 +12,7 @@ from app.db.models import ProgramLevel, User
 from app.db.session import get_session_maker
 from sqlalchemy import select
 from datetime import datetime
+from app.utils.chat_cleanup import cleanup_workout_messages
 import json
 
 router = Router()
@@ -28,6 +29,9 @@ class WorkoutStates(StatesGroup):
 @router.message(Command("workouts"))
 async def workouts_menu(message: types.Message):
 	"""Главное меню тренировок"""
+	# Очищаем старые сообщения
+	await cleanup_workout_messages(message)
+	
 	# Проверяем доступ пользователя
 	async_session = get_session_maker()
 	async with async_session() as s:
