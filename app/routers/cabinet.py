@@ -4,12 +4,14 @@ from aiogram.filters import Command
 from sqlalchemy import select
 from app.db.session import get_session_maker
 from app.db.models import Purchase, User, ProgramLevel
+from app.utils.chat_cleanup import cleanup_cabinet_messages
 
 router = Router()
 
 
 @router.message(Command("cabinet"))
 async def cabinet(message: types.Message):
+	await cleanup_cabinet_messages(message)
 	await show_cabinet(message)
 
 
@@ -54,6 +56,7 @@ async def show_cabinet(message: types.Message):
 @router.callback_query(lambda c: c.data == "cabinet")
 async def cabinet_callback(callback: types.CallbackQuery):
 	"""Обработка кнопки личного кабинета"""
+	await cleanup_cabinet_messages(callback.message)
 	await show_cabinet(callback.message)
 	await callback.answer()
 
