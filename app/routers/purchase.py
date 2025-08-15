@@ -49,10 +49,13 @@ async def on_buy(callback: types.CallbackQuery, state: FSMContext):
 	)
 
 	kb = InlineKeyboardMarkup(inline_keyboard=[
-		[InlineKeyboardButton(text="Оплатить ЮKassa", callback_data=f"pay:yookassa:{purchase.id}")],
-		[InlineKeyboardButton(text="Оплатить Stripe", callback_data=f"pay:stripe:{purchase.id}")],
-		[InlineKeyboardButton(text="Оплатить Telegram Stars", callback_data=f"pay:stars:{purchase.id}")],
-		[InlineKeyboardButton(text="Крипто (NOWPayments)", callback_data=f"pay:crypto:{purchase.id}")],
+		[InlineKeyboardButton(text="ЮKassa (карты)", callback_data=f"pay:yookassa:{purchase.id}")],
+		[InlineKeyboardButton(text="СБП (ЮKassa)", callback_data=f"pay:sbp:{purchase.id}")],
+		[InlineKeyboardButton(text="SberPay (ЮKassa)", callback_data=f"pay:sberpay:{purchase.id}")],
+		[InlineKeyboardButton(text="Tinkoff", callback_data=f"pay:tinkoff:{purchase.id}")],
+		[InlineKeyboardButton(text="Stripe (международные)", callback_data=f"pay:stripe:{purchase.id}")],
+		[InlineKeyboardButton(text="Telegram Stars", callback_data=f"pay:stars:{purchase.id}")],
+		[InlineKeyboardButton(text="Криптовалюта (NOWPayments)", callback_data=f"pay:crypto:{purchase.id}")],
 	])
 
 	await callback.message.edit_text(text, reply_markup=kb)

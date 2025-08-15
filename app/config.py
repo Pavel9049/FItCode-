@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     yookassa_shop_id: Optional[str] = Field(None, alias="YOOKASSA_SHOP_ID")
     yookassa_secret_key: Optional[str] = Field(None, alias="YOOKASSA_SECRET_KEY")
 
+    tinkoff_terminal_key: Optional[str] = Field(None, alias="TINKOFF_TERMINAL_KEY")
+    tinkoff_secret_key: Optional[str] = Field(None, alias="TINKOFF_SECRET_KEY")
+
+    nowpayments_api_key: Optional[str] = Field(None, alias="NOWPAYMENTS_API_KEY")
+
     google_application_credentials: Optional[str] = Field(None, alias="GOOGLE_APPLICATION_CREDENTIALS")
 
     support_chat_id: Optional[int] = Field(None, alias="SUPPORT_CHAT_ID")
