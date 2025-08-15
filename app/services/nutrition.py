@@ -492,6 +492,83 @@ class MealPlanner:
         
         return results
 
+# Добавляю недостающие блюда для полноты базы
+MEALS_DATABASE[MealType.BREAKFAST].extend([
+    Meal(
+        name="Яичница с овощами",
+        meal_type=MealType.BREAKFAST,
+        calories=220,
+        protein=15,
+        fat=12,
+        carbs=8,
+        recipe="1. Взбейте яйца\n2. Нарежьте овощи\n3. Обжарьте на сковороде",
+        image_url="assets/images/meals/breakfast/scrambled_eggs.jpg",
+        video_url="https://youtu.be/breakfast_scrambled_eggs",
+        ingredients=["яйца", "овощи", "масло"],
+        cooking_time=8,
+        difficulty=1,
+        tags=["белок", "быстро", "завтрак"],
+        nutrition_notes="Отличный источник белка"
+    )
+])
+
+MEALS_DATABASE[MealType.LUNCH].extend([
+    Meal(
+        name="Суп с курицей и овощами",
+        meal_type=MealType.LUNCH,
+        calories=180,
+        protein=20,
+        fat=6,
+        carbs=15,
+        recipe="1. Сварите куриный бульон\n2. Добавьте овощи\n3. Варите до готовности",
+        image_url="assets/images/meals/lunch/chicken_soup.jpg",
+        video_url="https://youtu.be/lunch_chicken_soup",
+        ingredients=["курица", "овощи", "бульон"],
+        cooking_time=40,
+        difficulty=2,
+        tags=["суп", "белок", "овощи"],
+        nutrition_notes="Легкий и питательный обед"
+    )
+])
+
+MEALS_DATABASE[MealType.DINNER].extend([
+    Meal(
+        name="Запеченная рыба с овощами",
+        meal_type=MealType.DINNER,
+        calories=250,
+        protein=25,
+        fat=8,
+        carbs=12,
+        recipe="1. Запеките рыбу в духовке\n2. Приготовьте овощи на пару\n3. Подавайте вместе",
+        image_url="assets/images/meals/dinner/baked_fish.jpg",
+        video_url="https://youtu.be/dinner_baked_fish",
+        ingredients=["рыба", "овощи", "специи"],
+        cooking_time=25,
+        difficulty=2,
+        tags=["рыба", "белок", "овощи"],
+        nutrition_notes="Богата омега-3 жирными кислотами"
+    )
+])
+
+MEALS_DATABASE[MealType.SNACK].extend([
+    Meal(
+        name="Творожная масса с фруктами",
+        meal_type=MealType.SNACK,
+        calories=120,
+        protein=12,
+        fat=4,
+        carbs=12,
+        recipe="1. Смешайте творог с фруктами\n2. Добавьте мед по вкусу",
+        image_url="assets/images/meals/snack/cottage_fruit_mix.jpg",
+        video_url="https://youtu.be/snack_cottage_fruit",
+        ingredients=["творог", "фрукты", "мед"],
+        cooking_time=3,
+        difficulty=1,
+        tags=["белок", "фрукты", "быстро"],
+        nutrition_notes="Легкий и полезный перекус"
+    )
+])
+
 # Глобальные экземпляры
 nutrition_calculator = NutritionCalculator()
 meal_planner = MealPlanner()

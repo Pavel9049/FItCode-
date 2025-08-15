@@ -1111,7 +1111,125 @@ EXERCISES_DATABASE = {
     }
 }
 
-# Добавлю остальные группы мышц аналогично
+# Добавляю остальные группы мышц
+EXERCISES_DATABASE.update({
+    "legs": {
+        WorkoutLevel.BEGINNER: [
+            Exercise(
+                name="Приседания с собственным весом",
+                muscle_group="legs",
+                level=WorkoutLevel.BEGINNER,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/legs_beginner_squats",
+                image_url="assets/images/exercises/legs/squats.jpg",
+                description="Базовые приседания для развития ног",
+                target_muscles=["квадрицепсы", "ягодичные мышцы", "икроножные"],
+                instructions=[
+                    "Встаньте прямо, ноги на ширине плеч",
+                    "Опуститесь до параллели бедер с полом",
+                    "Поднимитесь в исходное положение"
+                ],
+                sets_range=(2, 3),
+                reps_range=(10, 15),
+                rest_time=60,
+                difficulty=3
+            )
+        ]
+    },
+    "shoulders": {
+        WorkoutLevel.BEGINNER: [
+            Exercise(
+                name="Отжимания от стены",
+                muscle_group="shoulders",
+                level=WorkoutLevel.BEGINNER,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/shoulders_beginner_wall_pushups",
+                image_url="assets/images/exercises/shoulders/wall_pushups.jpg",
+                description="Отжимания от стены для развития плеч",
+                target_muscles=["дельтовидные мышцы", "трицепс"],
+                instructions=[
+                    "Встаньте лицом к стене",
+                    "Поставьте руки на стену на уровне плеч",
+                    "Выполните отжимание"
+                ],
+                sets_range=(2, 3),
+                reps_range=(10, 15),
+                rest_time=60,
+                difficulty=2
+            )
+        ]
+    },
+    "biceps": {
+        WorkoutLevel.BEGINNER: [
+            Exercise(
+                name="Подтягивания обратным хватом",
+                muscle_group="biceps",
+                level=WorkoutLevel.BEGINNER,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/biceps_beginner_reverse_pullups",
+                image_url="assets/images/exercises/biceps/reverse_pullups.jpg",
+                description="Подтягивания обратным хватом для бицепса",
+                target_muscles=["бицепс", "предплечья"],
+                instructions=[
+                    "Возьмитесь за турник обратным хватом",
+                    "Подтянитесь до касания подбородком турника",
+                    "Опуститесь под контролем"
+                ],
+                sets_range=(2, 3),
+                reps_range=(5, 10),
+                rest_time=90,
+                difficulty=4
+            )
+        ]
+    },
+    "triceps": {
+        WorkoutLevel.BEGINNER: [
+            Exercise(
+                name="Отжимания от пола узким хватом",
+                muscle_group="triceps",
+                level=WorkoutLevel.BEGINNER,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/triceps_beginner_diamond_pushups",
+                image_url="assets/images/exercises/triceps/diamond_pushups.jpg",
+                description="Отжимания узким хватом для трицепса",
+                target_muscles=["трицепс", "грудные мышцы"],
+                instructions=[
+                    "Примите упор лежа",
+                    "Сложите руки в форме ромба",
+                    "Выполните отжимание"
+                ],
+                sets_range=(2, 3),
+                reps_range=(8, 12),
+                rest_time=60,
+                difficulty=4
+            )
+        ]
+    },
+    "abs": {
+        WorkoutLevel.BEGINNER: [
+            Exercise(
+                name="Скручивания",
+                muscle_group="abs",
+                level=WorkoutLevel.BEGINNER,
+                equipment=EquipmentType.BODYWEIGHT,
+                video_url="https://youtu.be/abs_beginner_crunches",
+                image_url="assets/images/exercises/abs/crunches.jpg",
+                description="Базовые скручивания для пресса",
+                target_muscles=["прямая мышца живота", "косые мышцы"],
+                instructions=[
+                    "Лягте на спину, согните ноги в коленях",
+                    "Поднимите верхнюю часть тела",
+                    "Опуститесь под контролем"
+                ],
+                sets_range=(2, 3),
+                reps_range=(10, 15),
+                rest_time=45,
+                difficulty=2
+            )
+        ]
+    }
+})
+
 def get_exercises_for_muscle_group(muscle_group: str, level: WorkoutLevel) -> List[Exercise]:
     """Получить упражнения для группы мышц и уровня"""
     if muscle_group in EXERCISES_DATABASE and level in EXERCISES_DATABASE[muscle_group]:
