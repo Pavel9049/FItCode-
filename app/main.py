@@ -31,6 +31,9 @@ async def run_polling():
 	# Рефералы
 	from app.routers import referral as referral_router
 	dp.include_router(referral_router.router)
+	# Фоллбек
+	from app.routers import fallback as fallback_router
+	dp.include_router(fallback_router.router)
 
 	await init_db()
 	logger.info("DB initialized. Starting polling...")
