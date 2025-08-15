@@ -36,6 +36,7 @@ async def run_polling():
 	from app.routers import settings as settings_router
 	from app.routers import support as support_router
 	from app.routers import instagram as instagram_router
+	from app.routers import health as health_router
 	dp.include_router(workouts_router.router)
 	dp.include_router(menu_router.router)
 	dp.include_router(ai_kbju_router.router)
@@ -43,6 +44,7 @@ async def run_polling():
 	dp.include_router(settings_router.router)
 	dp.include_router(support_router.router)
 	dp.include_router(instagram_router.router)
+	dp.include_router(health_router.router)
 	# Рефералы
 	from app.routers import referral as referral_router
 	dp.include_router(referral_router.router)
