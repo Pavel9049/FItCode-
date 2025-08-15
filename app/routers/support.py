@@ -20,6 +20,7 @@ class SupportStates(StatesGroup):
 @router.message(Command("support"))
 async def support_command(message: types.Message):
 	"""Команда поддержки"""
+	await cleanup_general_messages(message)
 	await show_support_menu(message)
 
 
@@ -60,6 +61,7 @@ async def show_support_menu(message: types.Message):
 @router.callback_query(lambda c: c.data == "cabinet_support")
 async def cabinet_support_callback(callback: types.CallbackQuery):
 	"""Обработка кнопки поддержки из личного кабинета"""
+	await cleanup_general_messages(callback.message)
 	await show_support_menu(callback.message)
 	await callback.answer()
 
@@ -107,7 +109,7 @@ async def faq_general(callback: types.CallbackQuery, state: FSMContext):
 		"<b>Q: Как работает система звезд?</b>\n"
 		"A: Звезды начисляются за тренировки, загрузку фото прогресса, достижение целей и приглашение друзей.\n\n"
 		"<b>Q: Как получить приз?</b>\n"
-		A: Накопите звезды и обменяйте их на призы в разделе 'Звезды и призы'.\n\n"
+		"A: Накопите звезды и обменяйте их на призы в разделе 'Звезды и призы'.\n\n"
 		"<b>Q: Как пригласить друга?</b>\n"
 		"A: Получите реферальную ссылку в разделе 'Звезды и призы' и поделитесь с другом.\n\n"
 		"<b>Q: Что такое ежемесячный розыгрыш?</b>\n"
@@ -136,7 +138,7 @@ async def faq_technical(callback: types.CallbackQuery, state: FSMContext):
 		"<b>Q: Проблемы с видео</b>\n"
 		"A: Видео могут загружаться медленно. Попробуйте позже или используйте стабильное интернет-соединение.\n\n"
 		"<b>Q: Ошибки в меню</b>\n"
-		A: Очистите чат с ботом и начните заново с /start.\n\n"
+		"A: Очистите чат с ботом и начните заново с /start.\n\n"
 		"<b>Q: Не сохраняются настройки</b>\n"
 		"A: Проверьте подключение к интернету и попробуйте еще раз."
 	)
@@ -163,7 +165,7 @@ async def faq_nutrition(callback: types.CallbackQuery, state: FSMContext):
 		"<b>Q: Можно ли заменить блюда?</b>\n"
 		"A: Да, используйте поиск блюд или персональное питание для подбора альтернатив.\n\n"
 		"<b>Q: Как работает AI анализ фото?</b>\n"
-		A: Отправьте фото блюда, и бот определит примерные КБЖУ (приблизительная оценка).\n\n"
+		"A: Отправьте фото блюда, и бот определит примерные КБЖУ (приблизительная оценка).\n\n"
 		"<b>Q: Меню обновляется?</b>\n"
 		"A: Да, меню обновляется еженедельно с новыми блюдами."
 	)
@@ -502,6 +504,7 @@ async def process_support_message(message: types.Message, state: FSMContext):
 @router.callback_query(lambda c: c.data == "support")
 async def back_to_support(callback: types.CallbackQuery):
 	"""Возврат в главное меню поддержки"""
+	await cleanup_general_messages(callback.message)
 	await show_support_menu(callback.message)
 	await callback.answer()
 

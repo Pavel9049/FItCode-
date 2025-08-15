@@ -22,6 +22,7 @@ class InstagramStates(StatesGroup):
 @router.message(Command("instagram"))
 async def instagram_command(message: types.Message):
 	"""Команда Instagram"""
+	await cleanup_general_messages(message)
 	await show_instagram_menu(message)
 
 
@@ -59,6 +60,7 @@ async def show_instagram_menu(message: types.Message):
 @router.callback_query(lambda c: c.data == "cabinet_instagram")
 async def cabinet_instagram_callback(callback: types.CallbackQuery):
 	"""Обработка кнопки Instagram из личного кабинета"""
+	await cleanup_general_messages(callback.message)
 	await show_instagram_menu(callback.message)
 	await callback.answer()
 
@@ -482,6 +484,7 @@ async def go_to_instagram(callback: types.CallbackQuery, state: FSMContext):
 @router.callback_query(lambda c: c.data == "instagram")
 async def back_to_instagram(callback: types.CallbackQuery):
 	"""Возврат в главное меню Instagram"""
+	await cleanup_general_messages(callback.message)
 	await show_instagram_menu(callback.message)
 	await callback.answer()
 

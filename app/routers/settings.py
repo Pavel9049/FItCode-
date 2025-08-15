@@ -24,6 +24,7 @@ class SettingsStates(StatesGroup):
 @router.message(Command("settings"))
 async def settings_command(message: types.Message):
 	"""Команда настроек"""
+	await cleanup_general_messages(message)
 	await show_settings_menu(message)
 
 
@@ -62,6 +63,7 @@ async def show_settings_menu(message: types.Message):
 @router.callback_query(lambda c: c.data == "cabinet_settings")
 async def cabinet_settings_callback(callback: types.CallbackQuery):
 	"""Обработка кнопки настроек из личного кабинета"""
+	await cleanup_general_messages(callback.message)
 	await show_settings_menu(callback.message)
 	await callback.answer()
 
@@ -603,6 +605,7 @@ async def confirm_delete_account(callback: types.CallbackQuery, state: FSMContex
 @router.callback_query(lambda c: c.data == "settings")
 async def back_to_settings(callback: types.CallbackQuery):
 	"""Возврат в главное меню настроек"""
+	await cleanup_general_messages(callback.message)
 	await show_settings_menu(callback.message)
 	await callback.answer()
 

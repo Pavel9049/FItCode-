@@ -1,4 +1,5 @@
-from aiogram import Router, types
+from aiogram import Router
+from app.utils.chat_cleanup import cleanup_purchase_messages, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
 from app.db.session import get_session_maker

@@ -64,6 +64,7 @@ async def cabinet_callback(callback: types.CallbackQuery):
 @router.callback_query(lambda c: c.data == "back_to_cabinet")
 async def back_to_cabinet_callback(callback: types.CallbackQuery):
 	"""Возврат в личный кабинет"""
+	await cleanup_cabinet_messages(callback.message)
 	await show_cabinet(callback.message)
 	await callback.answer()
 
@@ -71,6 +72,8 @@ async def back_to_cabinet_callback(callback: types.CallbackQuery):
 @router.callback_query(lambda c: c.data == "cabinet_goals")
 async def cabinet_goals(callback: types.CallbackQuery):
 	"""Цели и прогресс"""
+	await cleanup_cabinet_messages(callback.message)
+	
 	async_session = get_session_maker()
 	async with async_session() as session:
 		user = (await session.execute(select(User).where(User.tg_user_id == callback.from_user.id))).scalar_one_or_none()

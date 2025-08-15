@@ -1,6 +1,7 @@
 from aiogram import Router, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, FSInputFile
 from aiogram.filters import CommandStart
+from app.utils.chat_cleanup import cleanup_start_messages
 from app.services.programs import get_paid_programs
 from app.db.models import User, Referral
 from app.db.session import get_session_maker
@@ -12,6 +13,8 @@ router = Router()
 
 @router.message(CommandStart())
 async def on_start(message: types.Message):
+	await cleanup_start_messages(message)
+	
 	# Проверяем реферальную ссылку
 	start_param = message.text.split()[1] if len(message.text.split()) > 1 else None
 	referrer_id = None

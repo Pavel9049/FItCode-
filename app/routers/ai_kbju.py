@@ -4,7 +4,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from app.utils.db_utils import get_user_by_tg_id, user_has_paid_access
-from app.utils.chat_cleanup import cleanup_ai_messages
+from app.utils.chat_cleanup import cleanup_ai_kbju_messages
 from app.utils.nutrition_utils import nutrition_analyzer
 from app.db.models import ProgramLevel
 import json
@@ -24,6 +24,7 @@ class AIKBJUStates(StatesGroup):
 @router.message(Command("ai_kbju"))
 async def ai_kbju_command(message: types.Message):
 	"""Команда AI анализа КБЖУ"""
+	await cleanup_general_messages(message)
 	await show_ai_kbju_menu(message)
 
 
@@ -65,6 +66,7 @@ async def show_ai_kbju_menu(message: types.Message):
 @router.callback_query(lambda c: c.data == "cabinet_ai_kbju")
 async def cabinet_ai_kbju_callback(callback: types.CallbackQuery):
 	"""Обработка кнопки AI анализа из личного кабинета"""
+	await cleanup_general_messages(callback.message)
 	await show_ai_kbju_menu(callback.message)
 	await callback.answer()
 
@@ -514,6 +516,7 @@ async def detailed_analysis_stats(callback: types.CallbackQuery, state: FSMConte
 @router.callback_query(lambda c: c.data == "ai_kbju")
 async def back_to_ai_kbju(callback: types.CallbackQuery):
 	"""Возврат в главное меню AI анализа"""
+	await cleanup_general_messages(callback.message)
 	await show_ai_kbju_menu(callback.message)
 	await callback.answer()
 

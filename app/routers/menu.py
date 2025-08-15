@@ -22,6 +22,7 @@ class MenuStates(StatesGroup):
 @router.message(Command("menu"))
 async def menu_command(message: types.Message):
 	"""Команда меню"""
+	await cleanup_menu_messages(message)
 	await show_menu_menu(message)
 
 
@@ -53,6 +54,7 @@ async def show_menu_menu(message: types.Message):
 @router.callback_query(lambda c: c.data == "cabinet_menu")
 async def cabinet_menu_callback(callback: types.CallbackQuery):
 	"""Обработка кнопки меню из личного кабинета"""
+	await cleanup_menu_messages(callback.message)
 	await show_menu_menu(callback.message)
 	await callback.answer()
 

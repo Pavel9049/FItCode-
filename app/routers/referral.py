@@ -20,6 +20,7 @@ class ReferralStates(StatesGroup):
 @router.message(Command("referral"))
 async def referral_command(message: types.Message):
 	"""Команда реферальной системы"""
+	await cleanup_general_messages(message)
 	await show_referral_menu(message)
 
 
@@ -69,6 +70,7 @@ async def show_referral_menu(message: types.Message):
 @router.callback_query(lambda c: c.data == "cabinet_referral")
 async def cabinet_referral_callback(callback: types.CallbackQuery):
 	"""Обработка кнопки реферальной системы из личного кабинета"""
+	await cleanup_general_messages(callback.message)
 	await show_referral_menu(callback.message)
 	await callback.answer()
 
@@ -510,6 +512,7 @@ async def message_referrals(callback: types.CallbackQuery, state: FSMContext):
 @router.callback_query(lambda c: c.data == "referral")
 async def back_to_referral(callback: types.CallbackQuery):
 	"""Возврат в главное меню реферальной системы"""
+	await cleanup_general_messages(callback.message)
 	await show_referral_menu(callback.message)
 	await callback.answer()
 

@@ -22,6 +22,7 @@ class RewardsStates(StatesGroup):
 @router.message(Command("rewards"))
 async def rewards_command(message: types.Message):
 	"""Команда наград"""
+	await cleanup_rewards_messages(message)
 	await show_rewards_menu(message)
 
 
@@ -59,6 +60,7 @@ async def show_rewards_menu(message: types.Message):
 @router.callback_query(lambda c: c.data == "cabinet_rewards")
 async def cabinet_rewards_callback(callback: types.CallbackQuery):
 	"""Обработка кнопки наград из личного кабинета"""
+	await cleanup_rewards_messages(callback.message)
 	await show_rewards_menu(callback.message)
 	await callback.answer()
 
@@ -519,6 +521,7 @@ async def raffle_prizes(callback: types.CallbackQuery, state: FSMContext):
 @router.callback_query(lambda c: c.data == "rewards")
 async def back_to_rewards(callback: types.CallbackQuery):
 	"""Возврат в главное меню наград"""
+	await cleanup_general_messages(callback.message)
 	await show_rewards_menu(callback.message)
 	await callback.answer()
 
