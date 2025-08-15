@@ -30,6 +30,11 @@ async def run_polling():
 
 	await init_db()
 	logger.info("DB initialized. Starting polling...")
+	# На случай, если раньше был включён webhook
+	try:
+		await bot.delete_webhook(drop_pending_updates=True)
+	except Exception:
+		pass
 	await dp.start_polling(bot)
 
 
