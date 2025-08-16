@@ -1,8 +1,29 @@
+nohup: ignoring input
 INFO:__main__:DB initialized. Starting polling...
 INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
-INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.job" to job store "default"
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.motivation_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.nutrition_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.workout_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.star_reminder_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.progress_check_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.update_workouts" to job store "default"
+INFO:apscheduler.scheduler:Added job "setup_scheduler.<locals>.update_nutrition" to job store "default"
 INFO:apscheduler.scheduler:Scheduler started
 INFO:aiogram.dispatcher:Start polling
 INFO:aiogram.dispatcher:Run polling for bot @FitCoode_bot id=8269244638 - 'FItCode'
-INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.job (trigger: interval[4:00:00], next run at: 2025-08-15 14:13:50 UTC)" (scheduled at 2025-08-15 10:13:50.154422+00:00)
-INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.job (trigger: interval[4:00:00], next run at: 2025-08-15 14:13:50 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.motivation_job (trigger: interval[4:00:00], next run at: 2025-08-16 04:25:56 UTC)" (scheduled at 2025-08-16 00:25:56.905740+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.motivation_job (trigger: interval[4:00:00], next run at: 2025-08-16 04:25:56 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.nutrition_job (trigger: interval[6:00:00], next run at: 2025-08-16 06:26:01 UTC)" (scheduled at 2025-08-16 00:26:01.906374+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.nutrition_job (trigger: interval[6:00:00], next run at: 2025-08-16 06:26:01 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.workout_job (trigger: interval[8:00:00], next run at: 2025-08-16 08:26:06 UTC)" (scheduled at 2025-08-16 00:26:06.906459+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.workout_job (trigger: interval[8:00:00], next run at: 2025-08-16 08:26:06 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.star_reminder_job (trigger: cron[hour='18', minute='0'], next run at: 2025-08-16 18:00:00 UTC)" (scheduled at 2025-08-16 00:26:11.906527+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.star_reminder_job (trigger: cron[hour='18', minute='0'], next run at: 2025-08-16 18:00:00 UTC)" executed successfully
+INFO:apscheduler.executors.default:Running job "setup_scheduler.<locals>.progress_check_job (trigger: cron[day_of_week='sun', hour='10', minute='0'], next run at: 2025-08-17 10:00:00 UTC)" (scheduled at 2025-08-16 00:26:16.908258+00:00)
+INFO:apscheduler.executors.default:Job "setup_scheduler.<locals>.progress_check_job (trigger: cron[day_of_week='sun', hour='10', minute='0'], next run at: 2025-08-17 10:00:00 UTC)" executed successfully

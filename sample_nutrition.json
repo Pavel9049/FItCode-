@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Куриная грудка с овощами",
+    "kcal": 250,
+    "proteins": 30.0,
+    "fats": 8.0,
+    "carbs": 15.0,
+    "recipe": "1. Обжарьте куриную грудку\n2. Добавьте овощи\n3. Подавайте горячим",
+    "photo_url": "assets/images/meals/lunch/chicken_vegetables.jpg",
+    "tags": "белок,обед,курица"
+  },
+  {
+    "title": "Протеиновый коктейль с бананом",
+    "kcal": 180,
+    "proteins": 25.0,
+    "fats": 3.0,
+    "carbs": 20.0,
+    "recipe": "1. Смешайте протеин с молоком\n2. Добавьте банан\n3. Взбейте в блендере",
+    "photo_url": "assets/images/meals/snack/protein_shake.jpg",
+    "tags": "белок,перекус,протеин"
+  }
+]
