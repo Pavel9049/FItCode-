@@ -6,6 +6,12 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from app.config import settings
 from app.utils.broadcast_utils import BroadcastManager
+from app.db.session import get_session_maker
+from app.services.workouts import EXERCISES_DATABASE
+from app.services.nutrition import MEALS_DATABASE
+from app.services.content_updater import content_updater
+import json
+import os
 
 MOTIVATION = [
 	"💪 Сегодня — лучший день, чтобы начать!",
@@ -119,12 +125,68 @@ def setup_scheduler(chat_ids_provider):
 			await send_broadcast(bot, chat_id, text)
 		await bot.session.close()
 
+	async def update_workouts():
+		"""Обновление тренировок из JSON файла"""
+		try:
+			result = await content_updater.update_workouts_from_json()
+			
+			if result["success"]:
+				print(f"✅ {result['message']}")
+				
+				# Отправляем уведомление администраторам
+				bot = Bot(token=settings.telegram_bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+				for admin_id in settings.admin_ids_list:
+					try:
+						await bot.send_message(
+							admin_id,
+							f"✅ <b>Обновление тренировок завершено</b>\n\n{result['message']}\n\nАрхивировано: {result['archived']}",
+							parse_mode="HTML"
+						)
+					except Exception as e:
+						print(f"Ошибка отправки уведомления админу {admin_id}: {e}")
+				await bot.session.close()
+			else:
+				print(f"❌ {result['message']}")
+				
+		except Exception as e:
+			print(f"❌ Ошибка обновления тренировок: {e}")
+
+	async def update_nutrition():
+		"""Обновление меню из JSON файла"""
+		try:
+			result = await content_updater.update_nutrition_from_json()
+			
+			if result["success"]:
+				print(f"✅ {result['message']}")
+				
+				# Отправляем уведомление администраторам
+				bot = Bot(token=settings.telegram_bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+				for admin_id in settings.admin_ids_list:
+					try:
+						await bot.send_message(
+							admin_id,
+							f"✅ <b>Обновление питания завершено</b>\n\n{result['message']}\n\nАрхивировано: {result['archived']}",
+							parse_mode="HTML"
+						)
+					except Exception as e:
+						print(f"Ошибка отправки уведомления админу {admin_id}: {e}")
+				await bot.session.close()
+			else:
+				print(f"❌ {result['message']}")
+				
+		except Exception as e:
+			print(f"❌ Ошибка обновления питания: {e}")
+
 	# Добавляем задачи в планировщик
 	scheduler.add_job(motivation_job, "interval", hours=4, next_run_time=datetime.utcnow() + timedelta(seconds=5))
 	scheduler.add_job(nutrition_job, "interval", hours=6, next_run_time=datetime.utcnow() + timedelta(seconds=10))
 	scheduler.add_job(workout_job, "interval", hours=8, next_run_time=datetime.utcnow() + timedelta(seconds=15))
 	scheduler.add_job(star_reminder_job, "cron", hour=18, minute=0, next_run_time=datetime.utcnow() + timedelta(seconds=20))
 	scheduler.add_job(progress_check_job, "cron", day_of_week="sun", hour=10, minute=0, next_run_time=datetime.utcnow() + timedelta(seconds=25))
+	
+	# Добавляем задачи обновления контента (каждый понедельник в 00:00)
+	scheduler.add_job(update_workouts, "cron", day_of_week="mon", hour=0, minute=0)
+	scheduler.add_job(update_nutrition, "cron", day_of_week="mon", hour=0, minute=0)
 	
 	scheduler.start()
 	return scheduler

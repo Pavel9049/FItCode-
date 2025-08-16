@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Жим штанги стоя",
+    "muscle_group": "shoulders",
+    "level": "advanced",
+    "requires_equipment": true,
+    "video_url": "https://youtu.be/sample_shoulder_press",
+    "description": "Базовое упражнение для развития плеч"
+  },
+  {
+    "name": "Приседания с гантелями",
+    "muscle_group": "legs",
+    "level": "novice",
+    "requires_equipment": true,
+    "video_url": "https://youtu.be/sample_dumbbell_squats",
+    "description": "Приседания с гантелями для развития ног"
+  }
+]

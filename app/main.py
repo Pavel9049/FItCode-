@@ -21,6 +21,7 @@ from app.routers import support as support_router
 from app.routers import instagram as instagram_router
 from app.routers import health as health_router
 from app.routers import referral as referral_router
+from app.routers import content_management as content_router
 from app.routers import fallback as fallback_router
 from app.routers import test as test_router
 from app.background.scheduler import setup_scheduler
@@ -54,6 +55,7 @@ async def run_polling():
     dp.include_router(instagram_router.router)
     dp.include_router(health_router.router)
     dp.include_router(referral_router.router)
+    dp.include_router(content_router.router)
     
     # Fallback роутер (должен быть последним)
     dp.include_router(fallback_router.router)
